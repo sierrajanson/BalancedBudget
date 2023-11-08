@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Balanced Budget</title>
+<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css"/>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  </head>
+
+  <body>
+    <py-script>
+      #-----------------------------------------------------------------------
+      """
+                                  
+                          
+                                Things to Implement/Fix
+      Taxes for Job income
+      Separate Page for Results 
+      Make Beginning of page page intro, and have users scroll down to start the process
+      Fix styling
+      Cool animated Intro? https://www.youtube.com/watch?v=2ak37WrbSDg
+
+      """
+      #-----------------------------------------------------------------------
+      import os
+      values = []
+      macroni = Element("my_text")
+      cover = Element("cover")
+      weeks = Element("weeks")
+      #py-terminal & display:none;
+      def switch_pages(curr_id, next_id):
+        js.document.getElementById(curr_id).style.display = "none";
+        js.document.getElementById(next_id).style.visibility = "visible";
+      #-----------------------------------------------------------------------
+      """
+                                  
+                          
+                                ENTERING VALUES PAGE
+
+
+      """
+      #-----------------------------------------------------------------------
+      # displays list of values
+      def show():
+        final_str = "This is currently your list of values: \n"        
+        if len(values) == 0: 
+          final_str = "Your list of values is empty."
+        for i in range(len(values)): 
+          final_str += (f"\t{i+1}. {values[i]}\n")
+        macroni.element.innerText = final_str
+
+      # deletes an existing value & logs to user
+      def delete():
+        value = js.document.getElementById('userIn2').value;
+        if value != "" and value[0] in "0123456789":
+          try:
+            values.pop(int(value)-1)
+            macroni.element.innerText = (f"Value at position {value} has been deleted.")
+          except IndexError:
+            macroni.element.innerText = "Index is out of range. Try again."
+          js.document.getElementById('userIn2').value = ''
+
+      # adds a valid value
+      def attempt():
+        value = js.document.getElementById('userIn').value;
+        if value != "":
+          values.append(value)
+          js.document.getElementById('userIn').value = ''
+
+      # clears a list of values
+      def clear():
+        values.clear()
+        macroni.element.innerText = "List has been cleared."
+      #-----------------------------------------------------------------------
+      """
+                                  
+                          
+                                ENTERING PLAN PAGE
+
+
+      """
+      #-----------------------------------------------------------------------
+      warning = Element("warning")
+
+      # calculates net money needed to be covered
+      def submit(): 
+        debt = (js.document.getElementById('debt').value)
+        savings = (js.document.getElementById('savings').value)
+        scholarships = (js.document.getElementById('scholarships').value)
+        other = (js.document.getElementById('other').value)  
+        if (debt == "" or savings == None or scholarships == None or other == None):
+          warning.element.innerText = "Please fill out all indicated boxes below." 
+          js.document.querySelector("div#numbers input")
+        else:
+          warning.element.innerText = ""
+          debt, savings, scholarships, other = [float(x) for x in [debt,savings,scholarships,other]]
+          needed = debt - savings - scholarships - other
+          if needed < 0: needed = 0
+          cover.element.innerText = f"You need to cover ${needed:.2f}."
+
+      # adds job-prompt questions to page
+      # repeats x times where x is # of jobs user has
+      def ques(text): 
+        p = js.document.createElement("p")
+        text = js.document.createTextNode(text)
+        p.appendChild(text)
+        element = js.document.getElementById("job")
+        element.appendChild(p)
+
+      # adds input-prompts for user
+      # repeats x times
+      def jobsIn(text):
+        userIn = js.document.createElement("input")
+        userIn.type = "text"
+        userIn.id = f"{text}"
+        element = js.document.getElementById("job")
+        element.appendChild(userIn)
+
+      # handles collection of and prompting for user job data using above functions
+      def jobs(): 
+        num = int(js.document.getElementById('jobs').value)
+        for i in range(num):
+          ques("Wage?")
+          jobsIn(f"wage{i}")
+          ques("Average amount of hours per shift?")
+          jobsIn(f"hours{i}")
+          ques("Days per week?")
+          jobsIn(f"days{i}")
+        js.document.getElementById("calculate_button").style.visibility = "visible";        
+      # calculates estimated time it will take to cover debt given regular income amounts
+      def calculate():
+        debt = float(js.document.getElementById('debt').value)
+        savings = float(js.document.getElementById('savings').value)
+        scholarships = float(js.document.getElementById('scholarships').value)
+        other = float(js.document.getElementById('other').value)       
+        warning.element.innerText = ""
+        needed = debt - savings - scholarships - other
+        # if money user has covers needed debt, they don't need any more money to cover the debt
+        if needed < 0: 
+          needed = 0
+          weeks.element.innerText = "You already have enough money to cover your college debt. Congrats!"
+        else:
+          num = int(js.document.getElementById('jobs').value)
+          revenue_per_week = 0
+          for i in range(num):  
+            wage = float(js.document.getElementById(f'wage{i}').value)
+            hours = float(js.document.getElementById(f'hours{i}').value)
+            days = float(js.document.getElementById(f'days{i}').value)
+            revenue_per_week += wage*hours*days
+          weeks.element.innerText = f"{((needed)/(revenue_per_week)):.0f} Weeks or {(((needed)/(revenue_per_week))/4.34814285714):.0f} Months"
+          js.document.getElementById("done_button1").style.visibility = "visible";        
+      #-----------------------------------------------------------------------
+      """
+                                  
+                          
+                                ENTERING RESULTS PAGE
+
+
+      """
+      #-----------------------------------------------------------------------         
+      output_values = Element("values")
+      def results():
+        switch_pages('finances_page','results_page')
+    </py-script>
+    <div id="home">
+      <!-- WELCOME PAGE ......................................... -->
+      <!-- ...................................................... -->
+      <!-- ...................................................... -->
+      <div id="welcome_page">
+        <h1>Balanced Budget</h1>
+        <pre>
+          this was created by a prospective college student trying to 
+          minimize debt
+          we can do it :-)
+        </pre>
+        <button id="done_button" py-click="switch_pages('welcome_page','finances_page')"> Click me to start </button>
+      </div>
+      
+      <!-- VALUES PAGE ......................................... -->
+      <!-- ..................................................... -->
+      <!-- ..................................................... -->
+      <div id="values_page">
+      <p>What are values that are important to you? Examples include Security, Entertainment, Education, Giving, and Quality. To delete a value, please enter just the number that you would like to delete! Ex: '1' </p>
+  
+      <div id="my_text"> </div>
+      <button py-click="show()" id="show">Show List</button>
+      <button py-click="clear()" id="delete">Clear List</button>
+  
+      <br>
+      <br>
+      <input id="userIn" type="text">
+      <button id="enter" type="submit" py-click="attempt()">Add Value</button>
+      <br>
+      <input id="userIn2" type="text">
+      <button py-click="delete()" id="delete">Delete Value</button>
+      <br>
+      <br>
+      <button id="enter" type="done_button" py-click="switch_pages('values_page','finances_page')">Click me when you are satisfied with your Values List!</button>
+      </div>
+      <!-- FINANCES PAGE ......................................... -->
+      <!-- ....................................................... -->
+      <!-- ....................................................... -->
+      
+        <div id="finances_page">
+          <h1> A few questions to formulate your plan! </h1>
+          <p id="warning"> </p>
+          <div id="numbers">
+            <p> How much college debt do you have? </p> 
+            <input id="debt" type="text"> <br>
+            <p> How much money do you have in savings to apply to college? </p> 
+            <input id="savings" type="text"> <br>
+            <p> How much cumulative scholarship money can you apply to college? </p>
+            <input id="scholarships" type="text"> <br>
+            <p> What other money do you have to apply to debt? </p>
+            <input id="other" type="text"> <br>
+          </div>
+          <br> <button id="enter" type="submit" py-click="submit()">Done</button>
+          <div id="results">
+            <div id="cover"></div>
+            <p> Calculate how much time it will take you to cover the debt given a wage, number of hours per day, and how many days you are willing to work a week. </p>
+            <div id="weeks"> </div>
+            <div id='job'>
+              <p> How many jobs do you have? </p>
+              <input id="jobs" type="text"> <br>
+              <br> <button id="enter" type="submit" py-click="jobs()">Submit</button>
+            </div>
+              <br> <button id="calculate_button" type="submit" py-click="calculate()">Calculate</button>
+              <br> <button id="done_button1" type="submit" py-click="results()">Done</button>
+          </div>
+          <div id="results_page">
+            <div id="results"></div>
+          </div>   
+        </div>
+      </div>
+        <!-- output final cost, output how you could cover it with 
+        a minimum wage job & how many hours it would take
+        have a section to calculate how you could cover it working
+        3/4 days a week, for a certain number of hours, at a certain wage -->
+      </div>
+    </div>
+  </body>
+</html>

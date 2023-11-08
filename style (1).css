@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
+
+h1{
+  font-size: 150v;
+  font-family: "Space Mono";
+}
+button{
+  font-family: "Space Mono";
+}
+
+* {
+  background-color: #222;
+  color: #eee;
+  font-family: "Roboto Slab";
+  box-sizing: border-box;
+
+}
+input{
+  background-color: #fff;
+  color: #111;
+}
+#values_page{
+  display: none;
+  visibility: hidden;
+}
+#home{
+  position: absolute;
+}
+#my_text{
+  background-color: black;
+  color: white;
+  padding: 15px 15px;
+  height: 150px;
+  margin-bottom: 15px;
+}
+
+#finances_page{
+  position: relative;
+  visibility: hidden;
+  width: 70%;
+  left: 25%;
+}
+#results_page{
+  visibility: hidden;
+}
+#calculate_button{
+  visibility: hidden;
+}
+#warning{
+  color:red;
+  text-decoration-style: bold;
+}
+#done_button1{
+  visibility:hidden;
+}
